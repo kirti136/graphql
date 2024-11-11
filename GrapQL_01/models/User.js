@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     default: "Reader",
   },
   age: { type: Number, required: true },
+  token: { type: String }
 });
 
 module.exports = mongoose.model("User", userSchema);
