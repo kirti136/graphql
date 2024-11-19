@@ -1,12 +1,13 @@
 const authTypeDefs = `#graphql
   type AuthPayload {
-    token: String
+    message: String
     user: User
   }
 
   type Mutation {
-    login(email: String!, password: String!): AuthPayload
-  }
+  login(email: String!, password: String!): AuthPayload
+  logout: AuthPayload
+}
 `;
 
 module.exports = authTypeDefs;

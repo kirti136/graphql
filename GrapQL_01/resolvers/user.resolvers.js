@@ -1,8 +1,10 @@
+const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
 const userResolvers = {
   Query: {
     getUsers: async (_, __, { user }) => {
+      console.log("USER USER USER", user);
       if (user && user.role === "Admin") {
         return await User.find();
       }
@@ -19,15 +21,19 @@ const userResolvers = {
 
   Mutation: {
     createUser: async (_, { name, email, password, role = "Reader", age }) => {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({
-        name,
-        email,
-        password: hashedPassword,
-        role,
-        age,
-      });
-      return await user.save();
+      try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({
+          name,
+          email,
+          password: hashedPassword,
+          role,
+          age,
+        });
+        return await user.save();
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     deleteUser: async (_, { id }, { user }) => {

@@ -42,8 +42,20 @@ const startServer = async () => {
   app.use(
     "/graphql",
     expressMiddleware(server, {
-      context: async ({ req }) => {
-        const user = await authenticate(req);
+      context: async ({ req, res }) => {
+        const publicOperations = ["createUser", "login"]; // Define operations that don't require authentication
+        const query = req.body?.query; // Extract the query from the request body
+
+        // Check if the query contains the public operation, if contains then return an empty contex
+        if (
+          query &&
+          publicOperations.some((operation) => query.includes(operation))
+        ) {
+          return {}; 
+        }
+
+        // Authenticate for private operations
+        const user = await authenticate(req, res); 
         return { user };
       },
     })
@@ -51,7 +63,9 @@ const startServer = async () => {
 
   // Listen on the specified port
   app.listen(process.env.PORT || 4000, () => {
-    console.log(`Server running at http://localhost:${process.env.PORT || 4000}/graphql`);
+    console.log(
+      `Server running at http://localhost:${process.env.PORT || 4000}/graphql`
+    );
   });
 };
 

@@ -21,15 +21,15 @@ mutation {
     email: "admin@example.com"
     password: "admin12345"
   ) {
-  token
-  user{
-    id
-    name
-    email
-    role
-    age
-    token
-  }
+    message
+    user {
+      id
+      name
+      email
+      role
+      age
+      token
+    }
   }
 }
 

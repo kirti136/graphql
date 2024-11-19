@@ -24,7 +24,7 @@ const authResolvers = {
       user.token = token;
       await user.save();
 
-      return { token, user };
+      return { message: "Logged in successfully", user };
     },
   },
 };
