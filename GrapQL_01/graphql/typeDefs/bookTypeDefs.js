@@ -17,7 +17,7 @@ const bookTypeDefs = gql`
   extend type Mutation {
     createBook(
       title: String!
-      author: String!
+      author: String
       coverPage: String!
       year: Int!
     ): Book

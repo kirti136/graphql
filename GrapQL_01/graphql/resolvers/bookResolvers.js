@@ -1,3 +1,4 @@
+const { ensureAuth } = require("../../middlewares/authorization");
 const Book = require("../../models/Book");
 
 const bookResolvers = {
@@ -7,15 +8,41 @@ const bookResolvers = {
   },
 
   Mutation: {
-    createBook: async (_, { title, author, coverPage, year }) => {
-      return await new Book({ title, author, coverPage, year }).save();
-    },
-    deleteBook: async (_, { id }, { user }) => {
-      if (user && user.role === "Admin") {
-        await Book.findByIdAndDelete(id);
-        return "Book deleted";
+    createBook: async (_, { title, coverPage, year }, context) => {
+      const user = ensureAuth(context);
+
+      if (user.role !== "Author") {
+        throw new Error("User not authorized to create books");
       }
-      throw new Error("Not authorized to delete book");
+
+      const newBook = new Book({
+        title,
+        author: user.id,
+        coverPage,
+        year,
+      });
+
+      return await newBook.save();
+    },
+
+    deleteBook: async (_, { id }, context) => {
+      const user = ensureAuth(context);
+      const book = await Book.findById(id);
+      if (!book) {
+        throw new Error("Book not found");
+      }
+
+      if (user.role === "Admin") {
+        await Book.findByIdAndDelete(id);
+        return "Book deleted by admin";
+      }
+
+      if (user.role === "Author" && book.author.toString() === user.id) {
+        await Book.findByIdAndDelete(id);
+        return "Book deleted by author";
+      }
+
+      throw new Error("Not authorized to delete this book");
     },
   },
 };

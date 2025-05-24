@@ -1,7 +1,8 @@
 const ensureAuth = (context) => {
-  if (!context.user) {
+  if (!context.user.user) {
     throw new Error("Authentication required");
   }
+
   return context.user.user;
 };
 
