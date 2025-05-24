@@ -44,6 +44,28 @@ const bookResolvers = {
 
       throw new Error("Not authorized to delete this book");
     },
+    
+    updateBook: async (_, { id, title, coverPage, year }, context) => {
+      const user = ensureAuth(context);
+
+      const book = await Book.findById(id);
+      if (!book) {
+        throw new Error("Book not found");
+      }
+
+      if (
+        user.role === "Admin" ||
+        (user.role === "Author" && book.author.toString() === user.id)
+      ) {
+        if (title !== undefined) book.title = title;
+        if (coverPage !== undefined) book.coverPage = coverPage;
+        if (year !== undefined) book.year = year;
+
+        return await book.save();
+      }
+
+      throw new Error("Not authorized to update this book");
+    },
   },
 };
 

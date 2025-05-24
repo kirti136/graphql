@@ -22,6 +22,7 @@ const bookTypeDefs = gql`
       year: Int!
     ): Book
     deleteBook(id: ID!): String
+    updateBook(id: ID!, title: String, coverPage: String, year: Int): Book
   }
 `;
 
